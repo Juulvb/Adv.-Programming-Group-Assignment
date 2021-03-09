@@ -47,19 +47,16 @@ def covariance_of_two_lists(x, y):
     calculate the covariance
         
     Parameters: 
-        x, a non empty list of numbers
-        y, a non empty list of numbers of equal length as x
+        x, a non empty list of normalized numbers
+        y, a non empty list of normalized numbers of equal length as x
         
     Returns: the covariance of x and y
     """
-    mean_x = sum(x) / len(x) #get the mean of list x
-    mean_y = sum(y) / len(y) #get the mean of list y
-    
     #iterate over each corresponding element in x and y
     #for each element subtract the corresponding mean, and then multiply the two elements
     #a list, cov_list, of the multiplied variances is constructed
     
-    cov_list = [(a - mean_x) * (b - mean_y) for (a,b) in zip(x,y)] 
+    cov_list = [a * b for (a,b) in zip(x,y)] 
     covariance = sum(cov_list) / (len(cov_list)-1) #calculate the covariance
     
     return covariance 
