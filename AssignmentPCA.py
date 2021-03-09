@@ -83,7 +83,25 @@ def load_RMAExp_to_matrix(data):
     
     return results
 
-def normalize_matrix(data):
+def normalize_list(variable_list):
+    """
+    Given a numpy list of numbers, variable_list, create a list with the normalized values of variable_list
+        
+    Parameters: 
+        variable_list, a list of numbers 
+        
+    Returns: a list containing the z-score normalized values of data
+    """
+    mean = sum(variable_list) / len(variable_list) #get the mean of the variable
+    variance = sum(pow(x-mean,2) for x in variable_list) / len(variable_list) #get the variance of the variable
+    std = math.sqrt(variance) #get the standard deviation of the variable
+    
+    variable_list -= mean # subtract the mean of the variable of every instance of the variable, so the mean becomes 0
+    variable_list /= std # devide every instance of the variable by the standard deviation, so the standard deviation becomes 1
+    
+    return variable_list
+
+def normalize_matrix(data_matrix):
     """
     Given a MxN numpy array, data 
     create a MxN numpy array containing the z-score normalized values of data per column N
@@ -93,20 +111,13 @@ def normalize_matrix(data):
         
     Returns: a MxN numpy array containing the z-score normalized values of data
     """
-    data_matrix = data.copy() #copy the matrix, so the original is not overwritten
-    nr_variables = data_matrix.shape[1] #get the number of variables: N
+    data_matrix_norm = data_matrix.copy() #copy the matrix, so the original is not overwritten
+    nr_variables = data_matrix_norm.shape[1] #get the number of variables: N
     
     for i in range(nr_variables): #iterate over every variable
-        variable_list = data_matrix[:,i] #load all elements of the specific variable
-        
-        mean = sum(variable_list) / len(variable_list) #get the mean of the variable
-        variance = sum(pow(x-mean,2) for x in variable_list) / len(variable_list) #get the variance of the variable
-        std = math.sqrt(variance) #get the standard deviation of the variable
-        
-        data_matrix[:,i] -= mean # subtract the mean of the variable of every instance of the variable, so the mean becomes 0
-        data_matrix[:,i] /= std # devide every instance of the variable by the standard deviation, so the standard deviation becomes 1
-        
-    return data_matrix
+        normalize_list(data_matrix_norm[:,i]) 
+   
+    return data_matrix_norm
 
 
 def covariance_matrix(data):
