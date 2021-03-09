@@ -131,15 +131,12 @@ def covariance_matrix(data):
     Returns: a NxN numpy array containing the covariance matrix of the data
     """
     nr_variables = data.shape[1] #get the number of variables N
-    covMatrix = np.empty((nr_variables, nr_variables)) #Initialize empty numpy array to prevent reallocation of memory
+    covMatrix = np.zeros((nr_variables, nr_variables)) #Initialize empty numpy array to prevent reallocation of memory
     
     for x in range(nr_variables): #iterate over the number of variables 
-        for y in range(nr_variables): #iterate over the number of variables 
-            #Since Cov(X,Y)=Cov(Y,X), the covariance of Y, X does not have to be calculated if the covariance of X, Y is already known
-            if y<x: #Check if Cov(Y, X) is already known
-                 covMatrix[x, y] = covMatrix[y, x] #Assign the known covariance of Y, X to X, Y position in the covariance matrix
-            else: 
-                covMatrix[x, y] = covariance_of_two_lists(data[:,x], data[:,y]) #Calculate the covariance of variables X and Y
+        for y in range(x, nr_variables): #iterate over the number of variables 
+            covMatrix[x, y] = covariance_of_two_lists(data[:,x], data[:,y]) #Calculate the covariance of variables X and Y
+            covMatrix[y, x] = covMatrix[x, y] #Assign the known covariance of Y, X to X, Y position in the covariance matrix
     return covMatrix
 
 def calcMaxIdx(l=[1]):
