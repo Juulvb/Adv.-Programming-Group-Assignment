@@ -96,10 +96,9 @@ def normalize_list(variable_list):
     variance = sum(pow(x-mean,2) for x in variable_list) / len(variable_list) #get the variance of the variable
     std = math.sqrt(variance) #get the standard deviation of the variable
     
-    variable_list -= mean # subtract the mean of the variable of every instance of the variable, so the mean becomes 0
-    variable_list /= std # devide every instance of the variable by the standard deviation, so the standard deviation becomes 1
-    
-    return variable_list
+    normalized_list = [(x-mean)/std for x in variable_list] #subtract the mean and divide by the standard deviation for every element of the list
+   
+    return normalized_list
 
 def normalize_matrix(data_matrix):
     """
@@ -115,7 +114,7 @@ def normalize_matrix(data_matrix):
     nr_variables = data_matrix_norm.shape[1] #get the number of variables: N
     
     for i in range(nr_variables): #iterate over every variable
-        normalize_list(data_matrix_norm[:,i]) 
+        data_matrix_norm[:,i] = normalize_list(data_matrix_norm[:,i]) 
    
     return data_matrix_norm
 
