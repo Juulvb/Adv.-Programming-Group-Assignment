@@ -41,22 +41,6 @@ def load_RMAExp_to_CellLines(metadata, rma_expr, ListOfCellLineNumbers = None):
     
     return results
 
-def cumulative_moving_averages(x):
-    """
-    Given a non empty list of numbers, x,
-    calculate the cumulative moving average
-        
-    Parameters: 
-        x, non-empty list numbers
-        
-    Returns: a list of equal length as x containing the cumulative moving average
-    """
-    c = [0]*(len(x)+1) #Initialize list of zeros with equal length as x with one leading zero, to prevent reallocation of memory
-    for i in range(len(x)): #iterate over c
-        c[i+1] = c[i] + (x[i]-c[i])/(i+1) #calculate cumulative moving average     
-    
-    return c #return the list of cumulative moving averages
-
 def covariance_of_two_lists(x, y):
     """
     Given two not empty lists of numbers of equal length, x and y,  
