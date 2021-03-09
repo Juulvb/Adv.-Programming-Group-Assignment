@@ -11,30 +11,21 @@ import numpy as np
 import pandas as pd
 
 
-metadata = pd.read_csv("GDSC_metadata.csv", index_col=0) #load all metadata from the csv file to a pandas dataframe, set the first column as index
-rma_expr = pd.read_csv("GDSC_RNA_expression.csv", index_col=0) #load all RMA Expression data from the csv file to a pandas dataframe, set the name of the cell line as index
-#define the cell lines to inspect
-ListOfCellLineNumbers= [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 
-                        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 
-                        30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 
-                        43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 
-                        56, 57, 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 
-                        70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 
-                        83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 
-                        96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 
-                        107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 
-                        117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 
-                        127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 
-                        137, 138, 139, 140, 141, 142, 143, 144, 145, 147, 148]
+metadata = pd.read_csv("Cell_lines and COSMIC_ID.tsv", sep='\t') #load all metadata from the csv file to a pandas dataframe, set the first column as index
+rma_expr = pd.read_csv("Cell_line_RMA_proc_basalExp.tsv", sep='\t') #load all RMA Expression data from the csv file to a pandas dataframe, set the name of the cell line as index
 
-data = load_RMAExp_to_CellLines(metadata, rma_expr, ListOfCellLineNumbers) #load the list of instances of class CellLineRMAExpression, and fill them with the RMA expression data
+rma_expr = rma_expr.T
+rma_expr.columns = rma_expr.loc['GENE_SYMBOLS']
+metadata.index = metadata['COSMIC_ID'].astype(str)
+metadata = metadata[~metadata.index.duplicated(keep='first')]
+metadata = metadata[metadata.index.isin(rma_expr.index)]
+
+data = load_RMAExp_to_CellLines(metadata, rma_expr, metadata_labels=["Name", "COSMIC_ID", "Tissue sub-type"], lookup_variable="cosmic_id") #load the list of instances of class CellLineRMAExpression, and fill them with the RMA expression data
 data_matrix = load_RMAExp_to_matrix(data) #load the RMA Expression data of all instances in the data list to a numpy array
 data_matrix_norm = normalize_matrix(data_matrix) #normalize the RMA Expression data per gene
-cov_matrix = covariance_matrix(data_matrix_norm) #calculate the covariance matrix for the normalized RMA expression data using the covariance_matrix method
-cov_matrix_np = np.cov(data_matrix_norm, rowvar=False) #calculate the covariance matrix for the normalized RMA expression data using the numpy covariance method
-eig_vals, eig_vecs = np.linalg.eig(cov_matrix) #calculate the eigenvalues and eigenvectors of the covariance matrix
-eig_vals1, eig_vecs1 = np.linalg.eig(cov_matrix_np)
 
+cov_matrix = covariance_matrix(data_matrix_norm) #calculate the covariance matrix for the normalized RMA expression data using the covariance_matrix method
+eig_vals, eig_vecs = np.linalg.eig(cov_matrix) #calculate the eigenvalues and eigenvectors of the covariance matrix
 
 nr_PC = 3 #determine how many principle components to investigate (normally no more then 3)
 idxs = getMaxIdxs(eig_vals, nr_PC) #get the indexes of the 3 maximal eigenvalues 

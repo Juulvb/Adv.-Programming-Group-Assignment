@@ -9,7 +9,7 @@ from CellLineRMAExpressionModule import initclassvars, CellLineRMAExpression
 import math
 import numpy as np
 
-def load_RMAExp_to_CellLines(metadata, rma_expr, ListOfCellLineNumbers = None):
+def load_RMAExp_to_CellLines(metadata, rma_expr, ListOfCellLineNumbers = None, metadata_labels = ["name", "COSMIC_ID", "TCGA_label"], lookup_variable = "name"):
     """
     Given: 
         a pandas dataset, metadata, containing the names, cosmic_id's and TCGA_labels of the cell lines,
@@ -32,13 +32,13 @@ def load_RMAExp_to_CellLines(metadata, rma_expr, ListOfCellLineNumbers = None):
     results = [None]*nr_instances #Initialize shape size to prevent reallocation of memory
     
     for i, idx in enumerate(ListOfCellLineNumbers):  #Iterate over every cell line index, with idx the correct index and i the iteration
-        name, cosmic_id, tcga_label = metadata.loc[idx] #Get the name, cosmic_id and tcga_label of the cell line with index idx
-        values = rma_expr.loc[name].values #Get the RMA Expression values of the cell line with an index corresponding to 'name', the name of cell line i
-        
+        name, cosmic_id, tcga_label = metadata.loc[idx, metadata_labels] #Get the name, cosmic_id and tcga_label of the cell line with index idx
+        values = rma_expr.loc[str(eval(lookup_variable))].values #Get the RMA Expression values of the cell line with an index corresponding to 'name', the name of cell line i
+    
         instance = CellLineRMAExpression(CellLineName=name, CosmicID=cosmic_id, CancerType=tcga_label) #load the cell line information into the instance
         instance.load_RMAExpression(values) #load the RMAExpression values into the instance
         results[i] = instance #save the instance to the list which will be used as output 
-    
+
     return results
 
 def covariance_of_two_lists(x, y):
@@ -85,7 +85,7 @@ def load_RMAExp_to_matrix(data):
 
 def normalize_list(variable_list):
     """
-    Given a numpy list of numbers, variable_list, create a list with the normalized values of variable_list
+    Given a list of numbers, variable_list, create a list with the normalized values of variable_list
         
     Parameters: 
         variable_list, a list of numbers 
