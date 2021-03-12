@@ -9,6 +9,8 @@ from CellLineRMAExpressionModule import initclassvars, CellLineRMAExpression
 import math
 import numpy as np
 
+from time import time
+
 def load_RMAExp_to_CellLines(metadata, rma_expr, ListOfCellLineNumbers = None, metadata_labels = ["name", "COSMIC_ID", "TCGA_label"], lookup_variable = "name"):
     """
     Given: 
@@ -128,8 +130,9 @@ def covariance_matrix(data):
     """
     nr_variables = data.shape[1] #get the number of variables N
     covMatrix = np.zeros((nr_variables, nr_variables)) #Initialize empty numpy array to prevent reallocation of memory
-    
+    start_time = time()
     for x in range(nr_variables): #iterate over the number of variables 
+        print(x, time()-start_time)
         for y in range(x, nr_variables): #iterate over the number of variables 
             covMatrix[x, y] = covariance_of_two_lists(data[:,x], data[:,y]) #Calculate the covariance of variables X and Y
             covMatrix[y, x] = covMatrix[x, y] #Assign the known covariance of Y, X to X, Y position in the covariance matrix
