@@ -1,46 +1,35 @@
-# -*- coding: utf-8 -*-
 """
-Created on Sun Feb 28 13:26:09 2021
+This module contains the plot methods used in the PCA analysis
+An example on how to use them can be found in the Main.py module
 
-@author: 20164798
+The methods in this module: 
+    PCA_plot_2d: creating a 2d plot of the first two principal components
+    PCA_plot_3d: creating a 3d plot of the first three principal components
+    PCA_plot_loadings: creating loading plots of the selected principal components
+    cumulative: support method for PCA_plot_cumulative_explained_variance, returning the cumulative of a list
+    PCA_plot_cumulative_explained_variance: creating a bar plot of the explained variances per principal component,
+                                            and a line plot of the cumulative explained variance
+    PCA_plot_scree: creating a scree plot of the explained variance                    
 """
-
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from AssignmentPCA import getMaxIdxs
 from CellLineRMAExpressionModule import CellLineRMAExpression
-
-def plot_cumulative_moving_averages(c=[1, 2]):
-    """
-    Given a non empty list of numbers, c, containing the cumulative moving average values
-    a plot is created which shows the cumulative moving average on the y axis and the index on the x axis
-        
-    Parameters: 
-        c, a non empty list of numbers containing the cumulative moving average values
-    """
-    
-    plt.plot(c, '-') #plot the cumulative moving average
-    
-    #add the x and y label
-    plt.xlabel("index")
-    plt.ylabel("cumulative moving average") 
-    
-    plt.show() #show the plot 
     
 def PCA_plot_2d(labels, targets, subspace):
     """
-    Given a non empty list of strings of length M, labels, a non empty list of strings, targets and a Mx2 matrix of numbers, subspace
+    Given a list of M labels, a list of target labels and a Mx2 matrix of numbers, subspace,
     Create a 2d scatter plot with M datapoints in the 2d coordinates given in the subspace columns, coloured by their corresponding labels
-    from labels present in targets 
+    from labels present in the target labels 
         
     Parameters: 
-        labels, a list of strings of length M, containing the labels of the data points
-        targets, a list of strings, the values to which the labels should correspond
-        subspace, a Mx2 matrix, containing the coordinates of the data points in the new subspace
+        labels, a non-empty list of strings of length M, containing the labels of the data points
+        targets, a non-empty list of strings, the values to which the labels should correspond
+        subspace, a Mx2 matrix of numbers, containing the coordinates of the data points in the new subspace
     """
     
-    plt.figure()
+    plt.figure(figsize=(12, 10))
     for target in targets: #check the datapoints for each target label
         indicesToKeep = [i for i, label in enumerate(labels) if label == target] #check which data point belongs to the specific target label
         plt.scatter(subspace[indicesToKeep,0], subspace[indicesToKeep,1], s = 50, label=target) #plot the data points belonging to the target label
@@ -56,17 +45,17 @@ def PCA_plot_2d(labels, targets, subspace):
 
 def PCA_plot_3d(labels, targets, subspace):
     """
-    Given a non empty list of strings of length M, labels, a non empty list of strings, targets and a Mx3 matrix of numbers, subspace
+    Given a list of M labels, a list of target labels and a Mx3 matrix of numbers, subspace,
     Create a 3d scatter plot with M datapoints in the 3d coordinates given in the subspace columns, coloured by their corresponding labels
-    from labels present in targets 
+    from labels present in the target labels 
         
     Parameters: 
         labels, a list of strings of length M, containing the labels of the data points
         targets, a list of strings, the values to which the labels should correspond
-        subspace, a Mx3 matrix, containing the coordinates of the data points in the new subspace
+        subspace, a Mx3 matrix of numbers, containing the coordinates of the data points in the new subspace
     """
     #initialize the 3d figure 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(10,10))
     ax = Axes3D(fig)
     
     for target in targets: #check the datapoints for each target label
@@ -95,9 +84,10 @@ def PCA_plot_loadings(loadings, nr_genes=None):
     if nr_genes is None: nr_genes = len(loadings[0]) #check how many genes to plot, if not specified plot all
     
     for i in range(len(loadings)): #loop over each principal component
-        idxs = getMaxIdxs(loadings[i], nr_genes) #get the indexes of the genes with the highest loading 
+        loading = abs(loadings[i])
+        idxs = getMaxIdxs(loading, nr_genes) #get the indexes of the genes with the highest loading 
         ticks = [CellLineRMAExpression.allparskeys[i] for i in idxs] #set the x labels to the correct gene names
-        heights = loadings[i][idxs] #set the heights of the loadings per gene
+        heights = loading[idxs] #set the heights of the loadings per gene
         
         plt.figure(figsize=(10,3)) #create a new figure
         
@@ -141,7 +131,7 @@ def PCA_plot_cumulative_explained_variance(explained_variance, nr_pcs):
     plt.plot(range(end_idx), [0.7]*len(cum_exp_var), label='70% Threshold') #make a line plot for the 70% threshold
 
     #make an appropriate ylabel and xlabel
-    plt.xticks(range(end_idx+1))
+    #plt.xticks(range(end_idx+1))
     plt.xlabel(f'N of {nr_pcs} principal components')
     plt.ylabel('Variance explained (per PC & cumulative)')
     

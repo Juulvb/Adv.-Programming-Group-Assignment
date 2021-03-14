@@ -1,5 +1,14 @@
+"""
+This module holds the CellLineRMAExpression class, used to store the RMA expression information of cell lines
+
+The methods in this module: 
+    initclassvars: used to initialize the class variable allparskeys                  
+"""
+
 class CellLineRMAExpression:
-    
+    """
+    Class used to store the RMA expression values of a cell line.
+    """
     allparskeys = []
     
     def __init__(self, CellLineName = 'AU565', CosmicID = '910704', CancerType='BRCA'):
