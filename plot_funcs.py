@@ -84,14 +84,15 @@ def PCA_plot_loadings(loadings, nr_genes=None):
     if nr_genes is None: nr_genes = len(loadings[0]) #check how many genes to plot, if not specified plot all
     
     for i in range(len(loadings)): #loop over each principal component
-        loading = abs(loadings[i])
-        idxs = getMaxIdxs(loading, nr_genes) #get the indexes of the genes with the highest loading 
+        absolute = abs(loadings[i])
+        idxs = getMaxIdxs(absolute, nr_genes) #get the indexes of the genes with the highest loading 
         ticks = [CellLineRMAExpression.allparskeys[i] for i in idxs] #set the x labels to the correct gene names
-        heights = loading[idxs] #set the heights of the loadings per gene
+        heights = absolute[idxs] #set the heights of the loadings per gene
+        colours = ['red', 'blue'] #set the colours for the negative and positive loadings
+        colourmap = [colours[int(value>0)] for value in loadings[i]] #assign the correct colours to the correct indexes
         
         plt.figure(figsize=(10,3)) #create a new figure
-        
-        plt.bar(ticks, heights) #plot the results
+        plt.bar(ticks, heights, color=colourmap) #plot the results
         plt.xticks(rotation=90) #allign the x labels vertically
 
         #add title and ylabel
@@ -131,7 +132,6 @@ def PCA_plot_cumulative_explained_variance(explained_variance, nr_pcs):
     plt.plot(range(end_idx), [0.7]*len(cum_exp_var), label='70% Threshold') #make a line plot for the 70% threshold
 
     #make an appropriate ylabel and xlabel
-    #plt.xticks(range(end_idx+1))
     plt.xlabel(f'N of {nr_pcs} principal components')
     plt.ylabel('Variance explained (per PC & cumulative)')
     
@@ -156,3 +156,4 @@ def PCA_plot_scree(explained_variance):
     #make a legend
     plt.legend()
     plt.show()
+    
